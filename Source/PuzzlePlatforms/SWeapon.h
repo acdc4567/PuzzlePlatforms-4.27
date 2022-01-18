@@ -81,6 +81,9 @@ UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category=Components)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
 	float RateOfFire=600;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon,meta=(ClampMin=0))
+	float BulletSpread=2.0f;
+
 	float TimeBWShots;
 
 	UPROPERTY(ReplicatedUsing=OnRep_HitScanTrace)

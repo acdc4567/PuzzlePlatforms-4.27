@@ -21,16 +21,30 @@ public:
 	// Sets default values for this component's properties
 	USHealthComponent();
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category=HealthComponent)
+	uint8 TeamNum=255;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(Replicated, BlueprintReadOnly,Category=HealthComponent)
+	bool bIsDead=false;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Health, BlueprintReadOnly,Category=HealthComponent)
 	float Health;
+
+	UFUNCTION() 
+	void OnRep_Health(float OldHealth);
 
 	UFUNCTION()
 	void HandleTakeAnyDamage( AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
+	UFUNCTION(Client, Reliable)
+	void ClientOnHealthChanged(USHealthComponent* HealthComponent, 
+	float SHealth, float HealthDelta, 
+	const class UDamageType* DamageType, class AController* InstigatedBy,
+	 AActor* DamageCauser);
+	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category=HealthComponent)
 	float DefaultHealth=100.f;
 
@@ -39,4 +53,14 @@ public:
 	UPROPERTY(BlueprintAssignable,Category="Events")
 	FOnHealthChangedSignature OnHealthChanged;
 		
+	UFUNCTION(BlueprintCallable,Category=HealthComponent)
+	void Heal(float HealAmount);
+
+	FORCEINLINE float GetHealth() const {return Health;}
+
+	UFUNCTION(BlueprintCallable,BlueprintPure,Category=HealthComponent)
+	static bool IsFriendly(AActor* ActorA,AActor* ActorB);
+
+
 };
+
